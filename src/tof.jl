@@ -6,9 +6,9 @@ mutable struct TOF
     times::Array
     counts::Array
     function TOF(datapath)
-        data = getdata(datapath)
-        times = data[!,"times"]
-        counts = data[!,"counts"]
+        data = getdata(datapath, skipto=7)
+        times = data.Column1
+        counts = data.Column2
         new(data, times, counts)
     end
 end

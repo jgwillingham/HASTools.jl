@@ -4,7 +4,7 @@
 #### PEAK MODELS ####
 
 gaussian(x, p...) = p[1] * exp(-(x-p[2])^2/(2*p[3]^2) )
-lorentzian(x, p...) = p[1]*(1/π)*p[3] /((x-p[2])^2 + p[3]^2)
+lorentzian(x, p...) = p[1]*p[3]^2 /((x-p[2])^2 + p[3]^2)
 pseudovoigt(x, p...) = gaussian(x, p[1:3]...) + lorentzian(x, [p[4], p[2], p[3]]...)
 
 # p0 contains triples A,μ,σ for each Gaussian / Lorentzian in the model
@@ -73,7 +73,7 @@ function getfullmodel(peakmodel, p0::Array, bgp0=nothing)
             bg = quadratic
         end
         full_p0 = append!(p0, bgp0)
-        full_model(X, p) = peakmodel(X, p[1:end-num_bg_params]) + bg(X, p[num_bg_params:end])
+        full_model(X, p) = peakmodel(X, p[1:end-num_bg_params]) + bg(X, p[end-num_bg_params+1:end])
     end
     return full_model, full_p0
 end

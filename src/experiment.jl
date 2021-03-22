@@ -4,7 +4,7 @@
 mutable struct Experiment
     crystal::String
     Tnoz::Real
-    date::Tuple
+    date::Date
     k0::Float64
     E0::Float64
     Tsample::Real
@@ -22,8 +22,6 @@ end
 
 
 function getdata(datapath::String; skipto::Int=1)
-    open(datapath) do
-        data = CSV.File(datapath, skipto=skipto, header=0, normalizenames=true);
-    end
+    data = CSV.File(datapath, skipto=skipto, header=0, normalizenames=true);
     return data
 end

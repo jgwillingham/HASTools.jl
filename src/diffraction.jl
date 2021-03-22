@@ -24,9 +24,16 @@ end
 
 function plotfit(diff::Diffraction, diff_fit)
     fit, model = diff_fit
-    plot(diff.angles, diff.counts, label=nothing)
+
     smooth_angles = [a for a in min(diff.angles...):0.01:max(diff.angles...)]
-    plot!(smooth_angles, model(smooth_angles, fit.param), lw=2)
+
+    stdev = sqrt( sum(fit.resid.^2) / length(fit.resid) )
+    plot(smooth_angles, model(smooth_angles, fit.param), lw=2,c=:darkred, legend=false,
+        ribbon=stdev, fillalpha=0.5, fillcolor=:orange)
+    scatter!(diff.angles, diff.counts, label=nothing, c=:black, alpha=0.8, ms=3.5,
+        markershape=:star4)
+        
     xlabel!("Angle (ᵒ)")
     ylabel!("Counts")
+    xlims!(min(diff.angles...), max(diff.angles...))
 end

@@ -13,4 +13,10 @@ include("diffraction.jl")
 include("tof.jl")
 
 
+export gaussian_model, lorentzian_model, pseudovoigt_model,
+    gaussians, lorentzians, pseudovoigts,
+    Experiment, TOF, Diffraction,
+    fit, plotfit
+
+
 end

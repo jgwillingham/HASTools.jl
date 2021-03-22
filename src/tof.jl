@@ -16,25 +16,15 @@ end
 
 
 
-function fit(tof::TOF, p0::Array, model=gaussian_model, bgp0=nothing)
-    fullmodel, full_p0 = getfullmodel(model, p0, bgp0)
-    thefit = curve_fit(fullmodel, tof.times, tof.counts, full_p0)
-    return thefit, fullmodel
-end
-
-
-function plotfit(tof::TOF, toffit)
-    fit, model = toffit
-
-    smoothtimes = [t for t in min(tof.times...):0.01:max(tof.times...)]
-
-    stdev = sqrt( sum(fit.resid.^2) / length(fit.resid) )
-    plot(smoothtimes, model(smoothtimes, fit.param), lw=2,c=:darkred, legend=false,
-        ribbon=stdev, fillalpha=0.5, fillcolor=:orange)
-    scatter!(tof.times, tof.counts, label=nothing, c=:black, alpha=0.8, ms=3.5,
-        markershape=:star4)
-
-    xlabel!("t (μs)")
-    ylabel!("Counts")
-    xlims!(min(tof.times...), max(tof.times...))
+function fit(tof::TOF, p0::Array, peakmodel=gaussian_model, bgp0=nothing)
+    fullmodel, fullp0 = getfullmodel(peakmodel, p0, bgp0)
+    thefit = curve_fit(fullmodel, tof.times, tof.counts, fullp0)
+    if bgp0 == nothing
+        num_bgparam = 0
+    else
+        num_bgparam = length(bgp0)
+    end
+    bgparam = thefit.param[end-num_bgparam:end]
+    datafit = DataFit(tof, thefit, fullmodel, peakmodel, bgparam)
+    return datafit
 end

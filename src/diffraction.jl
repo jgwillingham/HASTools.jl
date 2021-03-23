@@ -71,3 +71,24 @@ function peakanalysis(datafit)
     println("\n  (0,1)\t\t", ratios₀₁)
     println("\n  (1,1)\t\t", ratios₁₁)
 end
+
+
+function get_expected_peaks(datafit, direction::Tuple)
+    b1, b2, = datafit.data.exp.crystal.meshReciprocals
+    k0 = datafit.data.exp.k0
+    n1, n2 = direction
+    G = n1*b1 + n2*b2
+    Gnorm = √(G[1]^2 + G[2]^2 + G[3]^2)
+    θin = (180. - datafit.data.specular)/2
+    expected_peaks = []
+    for n in -3:3
+        try
+            θ = 180. - θin - asind( sind(θin)+n*Gnorm/k0 )
+            push!(expected_peaks, θ)
+        catch DomainError
+            continue
+        end
+    end
+    exp_peaks = round.(expected_peaks, digits=1)
+    return exp_peaks
+end

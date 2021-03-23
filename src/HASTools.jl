@@ -18,6 +18,6 @@ export gaussian_model, lorentzian_model, pseudovoigt_model,
     Experiment, TOF, Diffraction,
     fit!, plotfit,
     plotdata,
-    setspecular!, peakanalysis
+    setspecular!, peakanalysis, get_expected_peaks
 
 end

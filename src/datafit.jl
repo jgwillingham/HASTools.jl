@@ -67,7 +67,7 @@ function plotfit(datafit::DataFit{Diffraction}; withpeaks=false)
     stdev = sqrt( sum(datafit.resid.^2) / length(datafit.resid) )
 
     plt = plot(smooth_angles, fitcurve, lw=2,c=:darkred, label=nothing,
-        ribbon=stdev, fillalpha=0.3, fillcolor=:orange)
+        ribbon=stdev, fillalpha=0.3, fillcolor=:orange, foreground_color_legend=nothing)
     plot!(datafit.data.angles, datafit.data.counts, label=nothing,
         c=:black, alpha=0.8, ms=3.5, markershape=:star4, ls=:dash, linealpha=0.4)
     ymin, ymax = ylims(plt)
@@ -97,7 +97,7 @@ function plotfit(datafit::DataFit{TOF}; withpeaks=false)
     stdev = sqrt( sum(datafit.resid.^2) / length(datafit.resid) )
 
     plt = plot(smoothtimes, fitcurve, lw=2,c=:darkred, label=nothing,
-        ribbon=stdev, fillalpha=0.3, fillcolor=:orange)
+        ribbon=stdev, fillalpha=0.3, fillcolor=:orange, foreground_color_legend=nothing)
     plot!(datafit.data.times, datafit.data.counts, label=nothing, c=:black, alpha=0.8, ms=3.5,
         markershape=:star4, ls=:dash, linealpha=0.4)
     ymin, ymax = ylims(plt)

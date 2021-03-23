@@ -51,9 +51,9 @@ function get_Δk_values(datafit)
     specular = datafit.data.specular
 
     θin  = π/180 * (180. - specular)/2
-    θout_list = [π/180 * (180. - specular - peak) for peak in datafit.peaks]
+    θout_list = [(π - θin - π/180*peak) for peak in datafit.peaks]
 
-    Δk_list = [k0 * (sin(θin) - sin(θout)) for θout in θout_list]
+    Δk_list = [k0 * (sin(θout) - sin(θin)) for θout in θout_list]
     return Δk_list
 end
 
@@ -61,5 +61,16 @@ end
 function peakanalysis(datafit)
     peaks = datafit.peaks
     Δk_list = get_Δk_values(datafit)
-    return Δk_list
+    b1, b2, = datafit.data.exp.crystal.meshReciprocals
+    G₁₀ = √(b1[1]^2 + b1[2]^2 + b1[3]^2)  # take norm without using LinearAlgebra.jl
+    G₀₁ = √(b2[1]^2 + b2[2]^2 + b2[3]^2)
+    G₁₁ = √((b1+b2)[1]^2 + (b1+b2)[2]^2 + (b1+b2)[3]^2)
+    ratios₁₀ = round.([Δk/G₁₀ for Δk in Δk_list], digits=2)
+    ratios₀₁ = round.([Δk/G₀₁ for Δk in Δk_list], digits=2)
+    ratios₁₁ = round.([Δk/G₁₁ for Δk in Δk_list], digits=2)
+    # Print results in pretty way
+    println("Direction\t       Δk/G")
+    println("  (1,0)\t\t", ratios₁₀)
+    println("\n  (0,1)\t\t", ratios₀₁)
+    println("\n  (1,1)\t\t", ratios₁₁)
 end

@@ -2,7 +2,7 @@
 
 
 mutable struct Experiment
-    crystal::String
+    crystal # intended to be of type 'Slab' from LatticeDynamics.jl
     Tnoz::Real
     date::Date
     k0::Float64

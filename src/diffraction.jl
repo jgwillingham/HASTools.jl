@@ -47,10 +47,10 @@ function get_Δk_values(datafit)
     k0 = datafit.data.exp.k0
     specular = datafit.data.specular
 
-    θin  = π/180 * (180. - specular)/2
-    θout_list = [(π - θin - π/180*peak) for peak in datafit.peaks]
+    θin  =  (180. - specular)/2
+    θout_list = [(180. - θin - peak) for peak in datafit.peaks]
 
-    Δk_list = [k0 * (sin(θout) - sin(θin)) for θout in θout_list]
+    Δk_list = [k0 * (sind(θout) - sind(θin)) for θout in θout_list]
     return Δk_list
 end
 
@@ -83,8 +83,9 @@ function get_expected_peaks(datafit, direction::Tuple)
     expected_peaks = []
     for n in -3:3
         try
-            θ = 180. - θin - asind( sind(θin)+n*Gnorm/k0 )
-            push!(expected_peaks, θ)
+            θout = asind( sind(θin)+n*Gnorm/k0 ) # from momentum conservation mod recip. vector
+            peak = 180. - θin - θout # peak position as detector angle
+            push!(expected_peaks, peak)
         catch DomainError
             continue
         end

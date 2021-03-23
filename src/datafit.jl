@@ -40,7 +40,7 @@ end
 function plotdata(diff::Diffraction)
     plot(diff.angles, diff.counts, label=nothing, c=:black, ms=3.5,
         markershape=:star4, ls=:dash, linealpha=0.4, size=(400,250))
-    xlabel!("2θ (°)")
+    xlabel!("Detector Angle (°)")
     ylabel!("Counts")
     xlims!(min(diff.angles...), max(diff.angles...))
 end
@@ -78,7 +78,7 @@ function plotfit(datafit::DataFit{Diffraction}; withpeaks=false)
         end
     end
 
-    xlabel!("2θ (°)")
+    xlabel!("Detector Angle (°)")
     ylabel!("Counts")
     xlims!(min(datafit.data.angles...), max(datafit.data.angles...))
     ylims!(ymin, ymax)

@@ -2,7 +2,6 @@
 module HASTools
 
 using Plots
-using LaTeXStrings
 using CSV
 using LsqFit
 using Dates
@@ -17,7 +16,8 @@ include("datafit.jl")
 export gaussian_model, lorentzian_model, pseudovoigt_model,
     gaussians, lorentzians, pseudovoigts, background,
     Experiment, TOF, Diffraction,
-    fit, plotfit,
-    plotdata
+    fit!, plotfit,
+    plotdata,
+    setspecular!, peakanalysis
 
 end

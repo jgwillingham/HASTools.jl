@@ -56,6 +56,19 @@ function quadratic(X::Array, p::Array)
 end
 
 
+function background(X::Array, p::Array)
+    num_bgparam = length(p)
+    if num_bgparam == 0
+        bg = zeros(length(X))
+    elseif num_bgparam == 1
+        bg = constant(X, p)
+    elseif num_bgparam == 2
+        bg = linear(X, p)
+    elseif num_bgparam == 3
+        bg = quadratic(X, p)
+    end
+    return bg
+end
 
 #### COMBINE PEAK MODEL AND BACKGROUND MODEL ####
 

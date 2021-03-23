@@ -40,33 +40,78 @@ end
 
 
 
-
-function plotfit(datafit::DataFit{Diffraction})
-    smooth_angles = [a for a in min(datafit.data.angles...):0.01:max(datafit.data.angles...)]
-
-    stdev = sqrt( sum(datafit.resid.^2) / length(datafit.resid) )
-    plot(smooth_angles, datafit.model(smooth_angles, datafit.param), lw=2,c=:darkred, legend=false,
-        ribbon=stdev, fillalpha=0.5, fillcolor=:orange)
-    scatter!(datafit.data.angles, datafit.data.counts, label=nothing, c=:black, alpha=0.8, ms=3.5,
-        markershape=:star4)
-
-    xlabel!("Angle (ᵒ)")
+function plotdata(diff::Diffraction)
+    plot(diff.angles, diff.counts, label=nothing, c=:black, ms=3.5,
+        markershape=:star4, ls=:dash, linealpha=0.4, size=(400,250))
+    xlabel!("2θ (°)")
     ylabel!("Counts")
-    xlims!(min(datafit.data.angles...), max(datafit.data.angles...))
+    xlims!(min(diff.angles...), max(diff.angles...))
+end
+
+
+function plotdata(tof::TOF)
+    plot(tof.times, tof.counts, label=nothing, c=:black, ms=3.5,
+        markershape=:star4, ls=:dash, linealpha=0.4, size=(400,250))
+    xlabel!("t (μs)")
+    ylabel!("Counts")
+    xlims!(min(tof.times...), max(tof.times...))
 end
 
 
 
-function plotfit(datafit::DataFit{TOF})
-    smoothtimes = [t for t in min(datafit.data.times...):0.01:max(datafit.data.times...)]
+function plotfit(datafit::DataFit{Diffraction}; withpeaks=false)
+    smooth_angles = [a for a in min(datafit.data.angles...):0.01:max(datafit.data.angles...)]
+    bg = background(smooth_angles, datafit.bgparam)
+    fitcurve = datafit.model(smooth_angles, datafit.param)
 
     stdev = sqrt( sum(datafit.resid.^2) / length(datafit.resid) )
-    plot(smoothtimes, datafit.model(smoothtimes, datafit.param), lw=2,c=:darkred, legend=false,
-        ribbon=stdev, fillalpha=0.5, fillcolor=:orange)
-    scatter!(datafit.data.times, datafit.data.counts, label=nothing, c=:black, alpha=0.8, ms=3.5,
-        markershape=:star4)
 
+    plt = plot(smooth_angles, fitcurve, lw=2,c=:darkred, label=nothing,
+        ribbon=stdev, fillalpha=0.3, fillcolor=:orange)
+    plot!(datafit.data.angles, datafit.data.counts, label=nothing,
+        c=:black, alpha=0.8, ms=3.5, markershape=:star4, ls=:dash, linealpha=0.4)
+    ymin, ymax = ylims(plt)
+
+    if withpeaks
+        for peakinfo in datafit.peakparam
+            peak = datafit.peakmodel(smooth_angles, peakinfo)
+            peakangle = round(peakinfo[2], digits=1)
+            plot!(smooth_angles, peak.+bg, fillrange=[bg peak.+bg], alpha=0.35,
+                label="$peakangle"*"°", palette=:seaborn_dark)
+        end
+    end
+
+    xlabel!("2θ (°)")
+    ylabel!("Counts")
+    xlims!(min(datafit.data.angles...), max(datafit.data.angles...))
+    ylims!(ymin, ymax)
+end
+
+
+
+function plotfit(datafit::DataFit{TOF}; withpeaks=false)
+    smoothtimes = [t for t in min(datafit.data.times...):0.01:max(datafit.data.times...)]
+    bg = background(smoothtimes, datafit.bgparam)
+    fitcurve = datafit.model(smoothtimes, datafit.param)
+
+    stdev = sqrt( sum(datafit.resid.^2) / length(datafit.resid) )
+
+    plt = plot(smoothtimes, fitcurve, lw=2,c=:darkred, label=nothing,
+        ribbon=stdev, fillalpha=0.3, fillcolor=:orange)
+    plot!(datafit.data.times, datafit.data.counts, label=nothing, c=:black, alpha=0.8, ms=3.5,
+        markershape=:star4, ls=:dash, linealpha=0.4)
+    ymin, ymax = ylims(plt)
+
+    if withpeaks
+        for peakinfo in datafit.peakparam
+            peak = datafit.peakmodel(smoothtimes, peakinfo)
+            peakangle = round(peakinfo[2], digits=1)
+            plot!(smoothtimes, peak.+bg, fillrange=[bg peak.+bg], alpha=0.35,
+                label="$peakangle μs", palette=:seaborn_dark)
+        end
+    end
     xlabel!("t (μs)")
     ylabel!("Counts")
     xlims!(min(datafit.data.times...), max(datafit.data.times...))
+    ylims!(ymin, ymax)
 end

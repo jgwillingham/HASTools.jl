@@ -24,7 +24,7 @@ function fit(diff::Diffraction, p0::Array, peakmodel=gaussian_model, bgp0=nothin
     else
         num_bgparam = length(bgp0)
     end
-    bgparam = thefit.param[end-num_bgparam:end]
+    bgparam = thefit.param[end-num_bgparam+1:end]
     datafit = DataFit(diff, thefit, fullmodel, peakmodel, bgparam)
     return datafit
 end

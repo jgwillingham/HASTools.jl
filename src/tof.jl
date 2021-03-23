@@ -24,7 +24,7 @@ function fit(tof::TOF, p0::Array, peakmodel=gaussian_model, bgp0=nothing)
     else
         num_bgparam = length(bgp0)
     end
-    bgparam = thefit.param[end-num_bgparam:end]
+    bgparam = thefit.param[end-num_bgparam+1:end]
     datafit = DataFit(tof, thefit, fullmodel, peakmodel, bgparam)
     return datafit
 end

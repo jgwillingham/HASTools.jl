@@ -15,8 +15,9 @@ include("datafit.jl")
 
 
 export gaussian_model, lorentzian_model, pseudovoigt_model,
-    gaussians, lorentzians, pseudovoigts,
+    gaussians, lorentzians, pseudovoigts, background,
     Experiment, TOF, Diffraction,
-    fit, plotfit
+    fit, plotfit,
+    plotdata
 
 end

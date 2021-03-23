@@ -72,23 +72,21 @@ end
 
 #### COMBINE PEAK MODEL AND BACKGROUND MODEL ####
 
-function getfullmodel(peakmodel, p0::Array, bgp0=nothing)
-    if bgp0 == nothing
-        full_model = peakmodel
-        full_p0 = p0
-    else
-        num_bg_params = length(bgp0)
-        if num_bg_params == 1
-            bg = constant
-        elseif num_bg_params == 2
-            bg = linear
-        elseif num_bg_params == 3
-            bg = quadratic
-        end
-        full_p0 = append!(p0, bgp0)
-        full_model(X, p) = peakmodel(X, p[1:end-num_bg_params]) + bg(X, p[end-num_bg_params+1:end])
+function getfullmodel(peakmodel, p0::Array, bgp0=[])
+    num_bgparam = length(bgp0)
+    if num_bgparam == 0
+        bg(X, p) = constant(X, [0])
+    elseif num_bgparam == 1
+        bg = constant
+    elseif num_bgparam == 2
+        bg = linear
+    elseif num_bgparam == 3
+        bg = quadratic
     end
-    return full_model, full_p0
+    fullp0 = append!(p0, bgp0)
+    fullmodel(X, p) = peakmodel(X, p[1:end-num_bgparam]) + bg(X, p[end-num_bgparam+1:end])
+
+    return fullmodel, fullp0
 end
 
 

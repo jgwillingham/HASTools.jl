@@ -27,11 +27,8 @@ function getPeaks(fit, peakmodel, bgparam)
     elseif peakmodel == pseudovoigt_model
         ppp = 4
     end
-    if bgparam == nothing
-        num_bgparam = 0
-    else
-        num_bgparam = length(bgparam)
-    end
+
+    num_bgparam = length(bgparam)
     num_peakparam = length(fit.param) - num_bgparam
     peakparam = [fit.param[i:i+ppp-1] for i in 1:ppp:num_peakparam]
     peaks = [peak[2] for peak in peakparam]

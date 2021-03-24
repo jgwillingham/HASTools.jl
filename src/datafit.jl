@@ -56,15 +56,19 @@ end
 
 
 
-function plotfit(datafit::DataFit{Diffraction}; withpeaks=false)
+function plotfit(datafit::DataFit{Diffraction}; withpeaks=false, withribbon=true)
     smooth_angles = [a for a in min(datafit.data.angles...):0.01:max(datafit.data.angles...)]
     bg = background(smooth_angles, datafit.bgparam)
     fitcurve = datafit.model(smooth_angles, datafit.param)
 
-    stdev = sqrt( sum(datafit.resid.^2) / length(datafit.resid) )
-
+    if withribbon
+        stdev = sqrt( sum(datafit.resid.^2) / length(datafit.resid) )
+        ribbon = stdev
+    else
+        ribbon = nothing
+    end
     plt = plot(smooth_angles, fitcurve, lw=2,c=:darkred, label=nothing,
-        ribbon=stdev, fillalpha=0.3, fillcolor=:orange, foreground_color_legend=nothing)
+        ribbon=ribbon, fillalpha=0.3, fillcolor=:orange, foreground_color_legend=nothing)
     plot!(datafit.data.angles, datafit.data.counts, label=nothing,
         c=:black, alpha=0.8, ms=3.5, markershape=:star4, ls=:dash, linealpha=0.4)
     ymin, ymax = ylims(plt)
@@ -86,15 +90,19 @@ end
 
 
 
-function plotfit(datafit::DataFit{TOF}; withpeaks=false)
+function plotfit(datafit::DataFit{TOF}; withpeaks=false, withribbon=true)
     smoothtimes = [t for t in min(datafit.data.times...):0.01:max(datafit.data.times...)]
     bg = background(smoothtimes, datafit.bgparam)
     fitcurve = datafit.model(smoothtimes, datafit.param)
 
-    stdev = sqrt( sum(datafit.resid.^2) / length(datafit.resid) )
-
+    if withribbon
+        stdev = sqrt( sum(datafit.resid.^2) / length(datafit.resid) )
+        ribbon = stdev
+    else
+        ribbon = nothing
+    end
     plt = plot(smoothtimes, fitcurve, lw=2,c=:darkred, label=nothing,
-        ribbon=stdev, fillalpha=0.3, fillcolor=:orange, foreground_color_legend=nothing)
+        ribbon=ribbon, fillalpha=0.3, fillcolor=:orange, foreground_color_legend=nothing)
     plot!(datafit.data.times, datafit.data.counts, label=nothing, c=:black, alpha=0.8, ms=3.5,
         markershape=:star4, ls=:dash, linealpha=0.4)
     ymin, ymax = ylims(plt)

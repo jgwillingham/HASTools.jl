@@ -31,7 +31,8 @@ end
 function getΔE(exp::Experiment, Δk::Real, angle::Real, specular::Real)
     θin = (180. - specular)/2
     θout = 180 - θin - angle # `angle` is a detector angle
-    ΔE = exp.E0 * ( (( sind(θin) + Δk/exp.k0 ) / sind(θout))^2 - 1 )
+    sinratio = sind(θin)/sind(θout)
+    ΔE = exp.E0 * ( sinratio^2 * ( Δk/(exp.k0*sind(θin)) + 1 )^2 - 1 )
     return ΔE
 end
 
@@ -50,8 +51,9 @@ function plotscancurves(datafit, startangle::Real, stopangle::Real, direction::T
     n1, n2 = direction
     G = n1*b1 + n2*b2
     Gnorm = √(G[1]^2 + G[2]^2 + G[3]^2)
-    Δklist = [Δk for Δk in 0:0.01:Gnorm/2] # half of the Brillouin zone along this direction
-    println("Scan curves for order-$n peak:\n(Calculated with theoretical peak position)")
+    Δklist = [Δk for Δk in range(0, stop=Gnorm/2, length=2000)] # half of the Brillouin zone along this direction
+
+    println("Scan curves for order-$n peak:\n(Calculated with ideal lattice constants)")
     plt = plot(legend=false, gridalpha=0.6, minorgrid=true, minorgridalpha=0.2)
 
     startcurve = scancurve(exp, Δklist .+ n*Gnorm, startangle, specular)
@@ -66,6 +68,7 @@ function plotscancurves(datafit, startangle::Real, stopangle::Real, direction::T
     lowcurve, highcurve = ordercurves(kflipped_startcurve, kflipped_stopcurve)
     plot!(Δklist, highcurve, fillrange=[lowcurve highcurve], c=:lightgreen, fillcolor=:lightgreen, alpha=0.5)
     plot!(Δklist, abs.(highcurve), fillrange=[abs.(lowcurve) abs.(highcurve)], c=:lightgreen, fillcolor=:lightgreen, alpha=0.5)
+
     plot!([0.], seriestype=:hline, lw=2, c=:black)
     xlabel!("Δk (Å⁻¹)")
     ylabel!("ΔE (meV)")

@@ -3,8 +3,8 @@
 
 #### PEAK MODELS ####
 
-gaussian(x, p...) = p[1] * exp(-(x-p[2])^2/(2*p[3]^2) )
-lorentzian(x, p...) = p[1]*p[3]^2 /((x-p[2])^2 + p[3]^2)
+gaussian(x, p...) = abs(p[1]) * exp(-(x-p[2])^2/(2*p[3]^2) )
+lorentzian(x, p...) = abs(p[1])*p[3]^2 /((x-p[2])^2 + p[3]^2)
 pseudovoigt(x, p...) = gaussian(x, p[1:3]...) + lorentzian(x, [p[4], p[2], p[3]]...)
 
 # p0 contains triples A,μ,σ for each Gaussian / Lorentzian in the model
